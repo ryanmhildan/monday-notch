@@ -118,36 +118,6 @@ Your data is stored in:
 - *Clean temporary files* deletes files in `%TEMP%` that are more than a day old. Files in use are skipped, and you have to click twice to confirm.
 - Brightness control works on built-in laptop screens. Most external monitors don't support it.
 
-## Build from source
-
-You need the [.NET 8 SDK](https://dotnet.microsoft.com/download) (or newer) on Windows 10 1809+ or Windows 11.
-
-```bash
-dotnet run
-```
-
-To build the same single `.exe` as the releases:
-
-```bash
-dotnet publish -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish
-```
-
-`MondayNotch.exe --snapshot out.png --no-media` renders every screen to `out-*.png` and exits. The screenshots in this README were made that way.
-
-## Releasing a new version
-
-Push a version tag. GitHub Actions ([release.yml](.github/workflows/release.yml)) then builds `MondayNotch.exe` and publishes it on the Releases page. The tag also becomes the version shown in the app.
-
-```bash
-git tag v0.2.0
-```
-
-```bash
-git push origin v0.2.0
-```
-
-Each tag can be used only once, so every release needs a new number.
-
 ## Project layout
 
 | Path | What's in it |
