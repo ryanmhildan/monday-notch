@@ -13,34 +13,37 @@ namespace MondayNotch.Services;
 /// <summary>Settings > Advanced actions, plus the name used by the startup greeting.</summary>
 public static class Maintenance
 {
-    /// <summary>
-    /// GitHub repository ("owner/name") whose latest release is compared with this build. Empty until the
-    /// app is published somewhere; the update check then says so instead of pretending to be up to date.
-    /// </summary>
-    public const string UpdateRepository = "";
+    /// <summary>GitHub repository ("owner/name") whose latest release is compared with this build.</summary>
+    public const string UpdateRepository = "ryanmhildan/monday-notch";
+
+    /// <summary>Where a newer version can be downloaded.</summary>
+    public const string ReleasesPage = $"https://github.com/{UpdateRepository}/releases/latest";
 
     public static string CurrentVersion =>
         Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.0.0";
 
-    /// <summary>Human-readable result of looking for a newer release.</summary>
-    public static async Task<string> CheckForUpdateAsync()
+    /// <summary>Looks for a newer release. Returns a human-readable result and whether one is available.</summary>
+    public static async Task<(string Message, bool UpdateAvailable)> CheckForUpdateAsync()
     {
-        if (UpdateRepository.Length == 0)
-            return "No update source is set up for this build.";
         try
         {
             using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
             http.DefaultRequestHeaders.UserAgent.ParseAdd($"MondayNotch/{CurrentVersion}");
-            using JsonDocument json = JsonDocument.Parse(
-                await http.GetStringAsync($"https://api.github.com/repos/{UpdateRepository}/releases/latest"));
+            using HttpResponseMessage response =
+                await http.GetAsync($"https://api.github.com/repos/{UpdateRepository}/releases/latest");
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return ("No releases have been published yet.", false);
+            response.EnsureSuccessStatusCode();
+
+            using JsonDocument json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
             string tag = json.RootElement.GetProperty("tag_name").GetString()?.TrimStart('v', 'V') ?? "";
             return Version.TryParse(tag, out Version? latest) && latest > Version.Parse(CurrentVersion)
-                ? $"Version {tag} is available."
-                : "You're on the latest version.";
+                ? ($"Version {tag} is available.", true)
+                : ("You're on the latest version.", false);
         }
         catch (Exception)
         {
-            return "Couldn't check for updates. Are you online?";
+            return ("Couldn't check for updates. Are you online?", false);
         }
     }
 

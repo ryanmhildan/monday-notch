@@ -204,11 +204,22 @@ public partial class SettingsPage : UserControl
 
     // ---- Advanced ----------------------------------------------------------------------------
 
+    private bool _updateAvailable;
+
+    /// <summary>"Check" looks for a newer release; once one is found the button turns into "Download".</summary>
     private async void Update_Click(object sender, RoutedEventArgs e)
     {
+        if (_updateAvailable)
+        {
+            SystemControls.OpenUri(Maintenance.ReleasesPage);
+            return;
+        }
         UpdateBtn.IsEnabled = false;
         UpdateStatus.Text = "Checking…";
-        UpdateStatus.Text = $"Version {Maintenance.CurrentVersion} · {await Maintenance.CheckForUpdateAsync()}";
+        (string message, bool available) = await Maintenance.CheckForUpdateAsync();
+        UpdateStatus.Text = $"Version {Maintenance.CurrentVersion} · {message}";
+        _updateAvailable = available;
+        UpdateBtn.Content = available ? "Download" : "Check";
         UpdateBtn.IsEnabled = true;
     }
 

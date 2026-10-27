@@ -11,6 +11,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>assets\icon.ico</ApplicationIcon>
     <!-- WFAC010 targets WinForms apps; this is a WPF app, which takes its DPI mode from the manifest. -->
     <NoWarn>$(NoWarn);WFAC010</NoWarn>
     <AssemblyName>MondayNotch</AssemblyName>
@@ -18,6 +19,11 @@
     <Product>Monday Notch</Product>
     <Version>0.1.0</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Also used for the tray icon. -->
+    <Resource Include="assets\icon.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <!-- Screen brightness goes through WMI (WmiMonitorBrightness). -->

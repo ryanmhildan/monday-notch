@@ -1,57 +1,115 @@
-# Monday Notch
+<p align="center">
+  <img src="assets/logo.svg" width="112" alt="Monday Notch logo">
+</p>
 
-Notch kecil di tengah atas layar Windows. Arahkan kursor ke notch untuk membukanya; jauhkan kursor dan notch menutup lagi. Teks aplikasi berbahasa Inggris.
+<h1 align="center">Monday Notch</h1>
+
+<p align="center">
+  A small, living notch at the top of your Windows screen.<br>
+  Music with synced lyrics, quick controls, a focus timer, to-dos and notes — one hover away.
+</p>
+
+<p align="center">
+  <a href="https://github.com/ryanmhildan/monday-notch/releases/latest"><img src="https://img.shields.io/github/v/release/ryanmhildan/monday-notch?label=download&color=6D5DF6" alt="Latest release"></a>
+  <img src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows" alt="Windows 10 and 11">
+  <img src="https://img.shields.io/badge/.NET-8-512BD4" alt=".NET 8">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/control-center.png" width="560" alt="Monday Notch open on the Control Center">
+</p>
 
 ## Download
 
-Ambil `MondayNotch.exe` dari halaman **Releases** repo ini, lalu jalankan. Tidak perlu instal apa pun (runtime .NET sudah termasuk di dalam file).
+1. Go to **[Releases](https://github.com/ryanmhildan/monday-notch/releases/latest)** and download `MondayNotch.exe`.
+2. Run it. There is nothing to install — the .NET runtime is built in.
 
-Karena aplikasi belum ditandatangani (code signing), Windows SmartScreen mungkin menampilkan "Windows protected your PC". Klik **More info** → **Run anyway**.
+The app isn't code-signed yet, so Windows SmartScreen may say *"Windows protected your PC"*. Click **More info → Run anyway**.
 
-## Fitur
+Hover the notch to open it, move away to close it. Right-click the tray icon (next to the clock) for **Settings** and **Exit**.
 
-- **Startup greeting**: saat aplikasi dibuka, logo (pil dengan dua mata) muncul dan berkedip, lalu sapaan seperti "Good evening, Ryan". Nama diambil dari akun Windows (Auto) atau diisi sendiri (Custom).
-- **Notch tertutup (Idle)**: tiga slot kiri/tengah/kanan yang bisa diisi Battery, To-Do, Clock, Date, Weather, Ping, FPS, atau Empty, dan bisa ditukar posisinya. Saat musik diputar, sampul album mengambil slot kiri; saat Pomodoro berjalan, sisa waktunya mengambil slot kanan.
-- **Enam halaman** saat notch terbuka, dipindah dengan panah kiri/kanan atau titik di bawah:
-  1. **Control Center**: muncul pertama kalau tidak ada musik. Ada Wi-Fi, Bluetooth, Hotspot, Power mode (Efficiency/Balanced/Performance), Lock, Sleep, Restart, Shut down, Snip (screenshot), serta bar Brightness dan Volume. Klik kanan sebuah tile untuk membuka halaman Settings Windows yang sesuai. Restart dan Shut down harus diklik dua kali.
-  2. **Music**: muncul pertama kalau musik sedang diputar. Mendukung pemutar apa pun, lengkap dengan lirik tersinkron dari [LRCLIB](https://lrclib.net) (tombol **Show lyrics** / **Hide lyrics**). Selama lirik tampil, warna notch menjadi gradient dari sampul album.
-  3. **Focus**: Pomodoro 25/5 menit, istirahat panjang 15 menit setiap 4 sesi.
-  4. **To-do**: tambah dengan Enter, centang untuk selesai, × untuk hapus.
-  5. **Quick note**: satu catatan yang tersimpan otomatis.
-  6. **Settings**:
-     - **General**: Start with Windows, Startup greeting (Auto/Custom name), Auto-compact (notch mengecil jadi garis tipis saat browser aktif).
-     - **Appearance**: Anchored (menempel ke tepi layar, dengan lengkungan) atau Floating (melayang, dengan Distance from top 0–40 px); tema Dark, Light, atau Auto (mengikuti Windows).
-     - **Idle**: live preview notch tertutup dan pilihan widget per slot.
-     - **Advanced**: Check for updates, Clean temporary files, Restart notch, Reset all settings.
-- **Ikon tray**: Show notch, Show lyrics, Start with Windows, Settings…, Exit.
+## Features
 
-## Data dan privasi
+### Closed notch
 
-- Pengaturan: `HKCU\Software\MondayNotch`. To-do: `%AppData%\MondayNotch\todos.json`. Catatan: `%AppData%\MondayNotch\note.txt`.
-- **Lirik**: judul, artis, album, dan durasi lagu dikirim ke LRCLIB, hanya saat lirik aktif.
-- **Weather** (hanya kalau widget Weather dipakai): meminta izin lokasi Windows, lalu koordinat yang dibulatkan dikirim ke [Open-Meteo](https://open-meteo.com).
-- **Ping** (hanya kalau widget Ping dipakai): ping ke 1.1.1.1 setiap 5 detik.
-- **FPS** adalah jumlah frame yang digambar Windows compositor per detik, jadi menunjukkan seberapa cepat layar diperbarui, bukan FPS game tertentu.
-- **Check for updates** belum terhubung ke mana pun: konstanta `UpdateRepository` di `Services/Maintenance.cs` masih kosong. Isi dengan repo GitHub (`owner/name`) setelah aplikasi dirilis di sana.
-- **Clean temporary files** menghapus file di `%TEMP%` yang lebih tua dari sehari; file yang sedang dipakai dilewati.
+<img src="docs/screenshots/closed.png" width="320" alt="Closed notch">
 
-## Menjalankan
+Three slots — left, center and right — each showing a widget you pick: **Battery, To-Do, Clock, Date, Weather, Ping, FPS** or nothing. While music plays, the album art takes the left slot; while a focus timer runs, its countdown takes the right one. With lyrics turned on, the closed notch shows just the album art and the line being sung.
 
-Butuh .NET 8 SDK (atau yang lebih baru) di Windows 10 1809+ / Windows 11.
+### Six pages
+
+Switch with the arrows on either side or click the dots underneath.
+
+| | |
+|---|---|
+| **Control Center** — opens first when nothing is playing. Wi-Fi, Bluetooth, Hotspot, Power mode, Lock, Sleep, Restart, Shut down, Snip, and brightness and volume sliders. Right-click a tile to open its Windows settings. | <img src="docs/screenshots/control-center.png" width="380" alt="Control Center"> |
+| **Music** — opens first while something plays. Works with any player that shows up in Windows' media controls (Spotify, YouTube in the browser, Apple Music, …). Play/pause, skip, seek, and **synced lyrics** from [LRCLIB](https://lrclib.net); with lyrics on, the notch takes on the colours of the album art. | |
+| **Focus** — a Pomodoro timer: 25 minutes of focus, 5 minutes of break, a long break every four sessions. The notch pops open with a chime when time is up. | <img src="docs/screenshots/focus.png" width="380" alt="Focus timer"> |
+| **To-do** — type and press Enter, tick to finish, hover for ×. Finished tasks sink to the bottom. | <img src="docs/screenshots/todo.png" width="380" alt="To-do list"> |
+| **Quick note** — one scratch note that saves as you type. | <img src="docs/screenshots/quick-note.png" width="380" alt="Quick note"> |
+| **Settings** — everything below. | <img src="docs/screenshots/settings-idle.png" width="380" alt="Idle settings with live preview"> |
+
+### Startup greeting
+
+<img src="docs/screenshots/greeting.png" width="340" alt="Startup greeting">
+
+When Monday Notch starts, the logo pops in, blinks, and says hello — with your Windows name or one you choose.
+
+### Light theme and floating shape
+
+<img src="docs/screenshots/light-floating.png" width="420" alt="Light theme, floating notch">
+
+## Settings
+
+| Tab | Options |
+|---|---|
+| **General** | Start with Windows · Startup greeting (name: Auto or Custom) · Auto-compact (shrinks to a thin line while a browser is the active window) |
+| **Appearance** | Notch shape: Anchored (attached to the top edge) or Floating, with distance from the top · Theme: Dark, Light or Auto (follows Windows) |
+| **Idle** | Live preview of the closed notch · widget for the left, center and right slot, with swap buttons |
+| **Advanced** | Check for updates · Clean temporary files · Restart notch · Reset all settings |
+
+## Privacy
+
+Monday Notch has no account and no analytics. Everything stays on your PC except these, and only while you use them:
+
+| Feature | What leaves your PC | Where |
+|---|---|---|
+| Lyrics (when shown) | Song title, artist, album and length | [LRCLIB](https://lrclib.net) |
+| Weather widget | Your location, rounded to about 1 km (Windows asks for permission first) | [Open-Meteo](https://open-meteo.com) |
+| Ping widget | A ping every 5 seconds | 1.1.1.1 |
+| Check for updates | A request for the latest release | GitHub |
+
+Your data lives in:
+
+- Settings: `HKCU\Software\MondayNotch`
+- To-dos: `%AppData%\MondayNotch\todos.json`
+- Note: `%AppData%\MondayNotch\note.txt`
+
+**Good to know**
+
+- *FPS* is how many frames Windows draws per second for the whole screen — how smoothly the screen is updating, not the frame rate of a particular game.
+- *Clean temporary files* deletes files in `%TEMP%` that are more than a day old. Files in use are skipped, and it asks you to click twice.
+- Brightness control works on built-in laptop screens. Most external monitors don't support it.
+
+## Build from source
+
+You need the [.NET 8 SDK](https://dotnet.microsoft.com/download) (or newer) on Windows 10 1809+ or Windows 11.
 
 ```bash
-dotnet run --project MondayNotch
+dotnet run
 ```
 
-Build untuk dibagikan (satu file .exe, tanpa perlu menginstal .NET):
+To build the same single `.exe` as the releases:
 
 ```bash
-dotnet publish MondayNotch -c Release -r win-x64 --self-contained -p:PublishSingleFile=true
+dotnet publish -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish
 ```
 
-## Membuat rilis baru
+`MondayNotch.exe --snapshot out.png --no-media` renders every screen to `out-*.png` and exits. That's how the screenshots above were made.
 
-Rilis dibuat otomatis oleh GitHub Actions (`.github/workflows/release.yml`). Setiap kali tag versi di-push, GitHub membangun `MondayNotch.exe` dan memasangnya di halaman Releases:
+## Releasing a new version
+
+Push a version tag. GitHub Actions ([release.yml](.github/workflows/release.yml)) builds `MondayNotch.exe` and publishes it on the Releases page. The tag also becomes the version shown in the app.
 
 ```bash
 git tag v0.2.0
@@ -61,26 +119,14 @@ git tag v0.2.0
 git push origin v0.2.0
 ```
 
-Nomor versi di tag juga menjadi versi aplikasi (terlihat di Settings → Advanced).
+## Project layout
 
-## Struktur
-
-| File | Isi |
+| Path | What's in it |
 |---|---|
-| `MainWindow.xaml(.cs)` | Jendela notch: bentuk dan animasi, greeting, slot idle, halaman Music/Focus/To-do, navigasi halaman |
-| `Pages/ControlCenterPage` | Halaman Control Center |
-| `Pages/NotePage` | Halaman Quick note |
-| `Pages/SettingsPage` | Halaman Settings (4 tab) |
-| `App.xaml` | Style bersama dan brush tema |
-| `IdleWidgetView.cs` | Menggambar widget idle (dipakai notch dan live preview) |
-| `Services/ThemeManager.cs` | Tema Dark/Light/Auto |
-| `Services/AppSettings.cs` | Semua pengaturan |
-| `Services/SystemControls.cs` | Wi-Fi, Bluetooth, hotspot, power mode, brightness, lock/sleep/restart/shutdown, snip |
-| `Services/AudioVolume.cs` | Volume lewat Core Audio |
-| `Services/IdleInfo.cs` | Data cuaca, ping, dan FPS |
-| `Services/Maintenance.cs` | Update check, clean temp, nama untuk greeting |
-| `Services/MediaService.cs`, `LyricsService.cs`, `ArtworkPalette.cs` | Musik, lirik, warna dari sampul album |
-| `Services/PomodoroTimer.cs`, `TodoStore.cs`, `NoteStore.cs` | Pomodoro, to-do, catatan |
-| `Services/TrayIcon.cs`, `StartupManager.cs` | Ikon tray, mulai bersama Windows |
-
-Untuk pengembangan, `MondayNotch.exe --snapshot hasil.png` menyimpan gambar setiap tampilan (`hasil-greeting.png`, `hasil-controlcenter.png`, dan seterusnya) lalu keluar.
+| `MainWindow.xaml(.cs)` | The notch: shape and animation, greeting, idle slots, Music/Focus/To-do pages, page navigation |
+| `Pages/` | Control Center, Quick note and Settings pages |
+| `App.xaml` | Shared styles and theme brushes |
+| `IdleWidgetView.cs`, `BatteryIcon.cs` | Idle widgets and the battery drawing |
+| `Services/` | Media, lyrics, album-art colours, system controls, volume, theme, settings, Pomodoro, to-dos, note, tray icon, maintenance |
+| `assets/` | Logo (`logo.svg`, PNG sizes) and app icon (`icon.ico`) |
+| `docs/screenshots/` | Images used in this README |

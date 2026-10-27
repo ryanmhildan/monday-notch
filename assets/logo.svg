@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>Monday Notch</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4F46E5" />
+      <stop offset="1" stop-color="#A855F7" />
+    </linearGradient>
+    <clipPath id="tile">
+      <rect width="512" height="512" rx="115" />
+    </clipPath>
+  </defs>
+  <!-- App tile -->
+  <rect width="512" height="512" rx="115" fill="url(#bg)" />
+  <g clip-path="url(#tile)">
+    <!-- The notch, hanging from the top edge with inward curves where it meets it -->
+    <path d="M90,0 H422 A30,30 0 0 0 392,30 V92 A58,58 0 0 1 334,150 H178 A58,58 0 0 1 120,92 V30 A30,30 0 0 0 90,0 Z"
+          fill="#0B0B12" />
+    <!-- Its eyes -->
+    <ellipse cx="222" cy="72" rx="22" ry="33" fill="#FFFFFF" />
+    <ellipse cx="290" cy="72" rx="22" ry="33" fill="#FFFFFF" />
+  </g>
+</svg>

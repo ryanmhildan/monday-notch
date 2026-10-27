@@ -27,11 +27,12 @@ public partial class App : Application
 
         ThemeManager.Apply(AppSettings.Theme);
 
-        // Developer aid: `MondayNotch.exe --snapshot out.png` renders every state to images and exits.
+        // Developer aid: `MondayNotch.exe --snapshot out.png [--no-media]` renders every state to images and exits.
         int snapshotIndex = Array.IndexOf(e.Args, "--snapshot");
         bool snapshot = snapshotIndex >= 0 && snapshotIndex + 1 < e.Args.Length;
 
-        _window = new MainWindow(showGreeting: !snapshot);
+        // `--no-media` keeps the music card empty, so screenshots don't include whatever happens to be playing.
+        _window = new MainWindow(showGreeting: !snapshot, followMedia: Array.IndexOf(e.Args, "--no-media") < 0);
         _window.Show();
 
         if (snapshot)

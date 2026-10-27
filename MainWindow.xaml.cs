@@ -60,6 +60,7 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _lyricsTimer = new() { Interval = TimeSpan.FromMilliseconds(150) };
     private readonly Dictionary<UIElement, double> _fadeTargets = new();
     private readonly bool _showGreeting;
+    private readonly bool _followMedia;
 
     private enum NotchPage { ControlCenter, Music, Focus, Todo, Note, Settings }
 
@@ -90,9 +91,11 @@ public partial class MainWindow : Window
     private int _currentLine = -1;
     private double _collapsedLyricWidth;
 
-    public MainWindow(bool showGreeting)
+    /// <param name="followMedia">False leaves the music card empty (used for screenshots without anyone's music in them).</param>
+    public MainWindow(bool showGreeting, bool followMedia = true)
     {
         _showGreeting = showGreeting && AppSettings.GreetingEnabled;
+        _followMedia = followMedia;
         InitializeComponent();
 
         _clock.Tick += (_, _) => Tick();
@@ -134,7 +137,8 @@ public partial class MainWindow : Window
             _clock.Start();
             if (_showGreeting)
                 _ = RunGreetingAsync();
-            await _media.InitializeAsync();
+            if (_followMedia)
+                await _media.InitializeAsync();
         };
     }
 
@@ -1137,16 +1141,26 @@ public partial class MainWindow : Window
         BitmapSource notch = RenderRoot();
 
         double w = Root.ActualWidth, h = Root.ActualHeight;
+        // Floating snapshots sit lower, as on screen.
+        double top = _shape == NotchShape.Floating ? AppSettings.FloatingDistance : 0;
         var visual = new DrawingVisual();
         using (DrawingContext dc = visual.RenderOpen())
         {
-            dc.DrawRectangle(new SolidColorBrush(Color.FromRgb(0xC8, 0xCC, 0xD4)), null, new Rect(0, 0, w, h));
-            // Floating snapshots sit lower, as on screen.
-            double top = _shape == NotchShape.Floating ? AppSettings.FloatingDistance : 0;
+            var backdrop = new LinearGradientBrush(Color.FromRgb(0xE4, 0xE8, 0xF2), Color.FromRgb(0xC7, 0xCE, 0xDE), 90);
+            dc.DrawRectangle(backdrop, null, new Rect(0, 0, w, h));
             dc.DrawImage(notch, new Rect(0, top, w, h));
         }
-        var output = new RenderTargetBitmap((int)(w * 2), (int)(h * 2), 192, 192, PixelFormats.Pbgra32);
-        output.Render(visual);
+        var full = new RenderTargetBitmap((int)(w * 2), (int)(h * 2), 192, 192, PixelFormats.Pbgra32);
+        full.Render(visual);
+
+        // Crop to the notch with a margin around it, at the 2x scale of the render.
+        const double margin = 28;
+        Point origin = NotchHost.TranslatePoint(new Point(), Root);
+        double left = Math.Max(0, origin.X - margin);
+        double right = Math.Min(w, origin.X + NotchHost.ActualWidth + margin);
+        double bottom = Math.Min(h, top + origin.Y + NotchHost.ActualHeight + margin);
+        var crop = new Int32Rect((int)(left * 2), 0, (int)((right - left) * 2), (int)(bottom * 2));
+        var output = new CroppedBitmap(full, crop);
 
         var encoder = new PngBitmapEncoder();
         encoder.Frames.Add(BitmapFrame.Create(output));

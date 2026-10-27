@@ -1,7 +1,6 @@
 using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Runtime.InteropServices;
+using System.IO;
 using System.Windows.Forms;
 
 namespace MondayNotch.Services;
@@ -67,39 +66,10 @@ public sealed class TrayIcon : IDisposable
         _image.Dispose();
     }
 
-    /// <summary>A white pill with two little eyes, drawn at runtime so no .ico file is needed.</summary>
+    /// <summary>The app icon (assets/icon.ico, embedded as a resource) at the size the tray asks for.</summary>
     private static Icon CreateIcon()
     {
-        using var bitmap = new Bitmap(32, 32);
-        using (Graphics g = Graphics.FromImage(bitmap))
-        {
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.Clear(Color.Transparent);
-
-            using var pill = new GraphicsPath();
-            var bounds = new RectangleF(2, 9, 28, 14);
-            float d = bounds.Height;
-            pill.AddArc(bounds.X, bounds.Y, d, d, 90, 180);
-            pill.AddArc(bounds.Right - d, bounds.Y, d, d, 270, 180);
-            pill.CloseFigure();
-            g.FillPath(Brushes.White, pill);
-
-            g.FillEllipse(Brushes.Black, 10, 13, 4, 6);
-            g.FillEllipse(Brushes.Black, 18, 13, 4, 6);
-        }
-
-        IntPtr handle = bitmap.GetHicon();
-        try
-        {
-            using Icon temporary = Icon.FromHandle(handle);
-            return (Icon)temporary.Clone();
-        }
-        finally
-        {
-            DestroyIcon(handle);
-        }
+        using Stream stream = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/assets/icon.ico")).Stream;
+        return new Icon(stream, SystemInformation.SmallIconSize);
     }
-
-    [DllImport("user32.dll")]
-    private static extern bool DestroyIcon(IntPtr handle);
 }
