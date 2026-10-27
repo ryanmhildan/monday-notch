@@ -48,11 +48,22 @@ Switch pages with the arrows on either side, or click the dots underneath.
 | | |
 |---|---|
 | **Control Center** opens first when nothing is playing. It has Wi-Fi, Bluetooth, Hotspot, Power mode, Lock, Sleep, Restart, Shut down, Snip, and sliders for brightness and volume. Right-click a tile to open its Windows settings. | <img src="docs/screenshots/control-center.png" width="380" alt="Control Center"> |
-| **Music** opens first while something plays. It works with any player that shows up in the Windows media controls (Spotify, YouTube in the browser, Apple Music and more). You get play/pause, skip, seek and **synced lyrics** from [LRCLIB](https://lrclib.net). With lyrics on, the notch takes on the colours of the album art. | |
+| **Music** opens first while something plays. It works with any player that shows up in the Windows media controls (Spotify, YouTube in the browser, Apple Music and more). You get play/pause, skip, seek and **synced lyrics** from [LRCLIB](https://lrclib.net). See [Music and lyrics](#music-and-lyrics) below. | <img src="docs/screenshots/music.png" width="380" alt="Music page"> |
 | **Focus** is a Pomodoro timer: 25 minutes of focus, 5 minutes of break, and a long break every four sessions. When time is up, the notch pops open with a chime. | <img src="docs/screenshots/focus.png" width="380" alt="Focus timer"> |
 | **To-do**: type a task and press Enter, tick it when it's done, hover it to delete it. Finished tasks sink to the bottom. | <img src="docs/screenshots/todo.png" width="380" alt="To-do list"> |
 | **Quick note** is one scratch note that saves as you type. | <img src="docs/screenshots/quick-note.png" width="380" alt="Quick note"> |
 | **Settings** holds every option listed further down. | <img src="docs/screenshots/settings-idle.png" width="380" alt="Idle settings with live preview"> |
+
+### Music and lyrics
+
+Press **Show lyrics** on the Music page to turn lyrics on, and **Hide lyrics** to turn them off again.
+
+| | Closed | Open |
+|---|---|---|
+| **Lyrics off**: the album art sits in the left slot next to the clock. | <img src="docs/screenshots/music-closed.png" width="260" alt="Closed notch while music plays"> | <img src="docs/screenshots/music.png" width="340" alt="Music page"> |
+| **Lyrics on**: the closed notch shows only the album art and the line being sung, and grows to fit it. Open, the lyrics scroll along with the song; click a line to jump there. The notch takes on the colours of the album art. | <img src="docs/screenshots/music-lyrics-closed.png" width="320" alt="Closed notch showing the current lyric"> | <img src="docs/screenshots/music-lyrics.png" width="340" alt="Music page with synced lyrics"> |
+
+<sub>Album art and lyrics in these screenshots belong to their respective owners.</sub>
 
 ### Startup greeting
 
