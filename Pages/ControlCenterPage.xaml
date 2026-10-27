@@ -1,0 +1,93 @@
+<UserControl x:Class="MondayNotch.Pages.ControlCenterPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Border Background="{DynamicResource CardBrush}" CornerRadius="16" Padding="12,10">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="48" />
+        <RowDefinition Height="8" />
+        <RowDefinition Height="30" />
+        <RowDefinition Height="8" />
+        <RowDefinition Height="22" />
+        <RowDefinition Height="4" />
+        <RowDefinition Height="22" />
+      </Grid.RowDefinitions>
+
+      <!-- Switches. Click toggles; right-click opens the matching Settings page. -->
+      <UniformGrid Columns="4">
+        <ToggleButton x:Name="WifiTile" Style="{StaticResource TileButton}" Margin="0,0,4,0"
+                      Click="WifiTile_Click" MouseRightButtonUp="WifiTile_RightClick">
+          <StackPanel>
+            <TextBlock Text="&#xE701;" FontFamily="{StaticResource IconFont}" FontSize="15" HorizontalAlignment="Center" />
+            <TextBlock x:Name="WifiLabel" Text="Wi-Fi" FontSize="10.5" FontWeight="SemiBold" Margin="0,4,0,0"
+                       MaxWidth="68" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" />
+          </StackPanel>
+        </ToggleButton>
+        <ToggleButton x:Name="BluetoothTile" Style="{StaticResource TileButton}" Margin="2,0"
+                      Click="BluetoothTile_Click" MouseRightButtonUp="BluetoothTile_RightClick">
+          <StackPanel>
+            <TextBlock Text="&#xE702;" FontFamily="{StaticResource IconFont}" FontSize="15" HorizontalAlignment="Center" />
+            <TextBlock Text="Bluetooth" FontSize="10.5" FontWeight="SemiBold" Margin="0,4,0,0" HorizontalAlignment="Center" />
+          </StackPanel>
+        </ToggleButton>
+        <ToggleButton x:Name="HotspotTile" Style="{StaticResource TileButton}" Margin="2,0"
+                      Click="HotspotTile_Click" MouseRightButtonUp="HotspotTile_RightClick">
+          <StackPanel>
+            <TextBlock Text="&#xE88A;" FontFamily="{StaticResource IconFont}" FontSize="15" HorizontalAlignment="Center" />
+            <TextBlock Text="Hotspot" FontSize="10.5" FontWeight="SemiBold" Margin="0,4,0,0" HorizontalAlignment="Center" />
+          </StackPanel>
+        </ToggleButton>
+        <ToggleButton x:Name="PowerTile" Style="{StaticResource TileButton}" Margin="4,0,0,0"
+                      Click="PowerTile_Click" MouseRightButtonUp="PowerTile_RightClick">
+          <StackPanel>
+            <TextBlock Text="&#xE945;" FontFamily="{StaticResource IconFont}" FontSize="15" HorizontalAlignment="Center" />
+            <TextBlock x:Name="PowerLabel" Text="Balanced" FontSize="10.5" FontWeight="SemiBold" Margin="0,4,0,0"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+        </ToggleButton>
+      </UniformGrid>
+
+      <!-- Session actions and screenshot. Restart and shut down ask for a second click. -->
+      <Grid Grid.Row="2">
+        <StackPanel Orientation="Horizontal">
+          <Button Style="{StaticResource IconButton}" Content="&#xE72E;" ToolTip="Lock" Click="Lock_Click" />
+          <Button Style="{StaticResource IconButton}" Content="&#xE708;" ToolTip="Sleep" Margin="6,0,0,0" Click="Sleep_Click" />
+          <Button x:Name="RestartBtn" Style="{StaticResource IconButton}" Content="&#xE777;" ToolTip="Restart" Margin="6,0,0,0"
+                  Click="Restart_Click" />
+          <Button x:Name="ShutDownBtn" Style="{StaticResource IconButton}" Content="&#xE7E8;" ToolTip="Shut down" Margin="6,0,0,0"
+                  Click="ShutDown_Click" />
+          <Button Style="{StaticResource IconButton}" Content="&#xE8C6;" ToolTip="Snip (screenshot)" Margin="6,0,0,0"
+                  Click="Snip_Click" />
+        </StackPanel>
+        <TextBlock x:Name="StatusText" FontSize="11" Foreground="{DynamicResource MutedBrush}"
+                   HorizontalAlignment="Right" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="130" />
+      </Grid>
+
+      <Grid Grid.Row="4">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="22" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="38" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="&#xE706;" FontFamily="{StaticResource IconFont}" FontSize="13" VerticalAlignment="Center" />
+        <Slider x:Name="BrightnessSlider" Grid.Column="1" Style="{StaticResource ThinSlider}" Minimum="0" Maximum="1"
+                ValueChanged="BrightnessSlider_ValueChanged" />
+        <TextBlock x:Name="BrightnessText" Grid.Column="2" FontSize="11" Foreground="{DynamicResource MutedBrush}"
+                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+      </Grid>
+
+      <Grid Grid.Row="6">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="22" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="38" />
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="VolumeGlyph" Text="&#xE767;" FontFamily="{StaticResource IconFont}" FontSize="13" VerticalAlignment="Center" />
+        <Slider x:Name="VolumeSlider" Grid.Column="1" Style="{StaticResource ThinSlider}" Minimum="0" Maximum="1"
+                ValueChanged="VolumeSlider_ValueChanged" />
+        <TextBlock x:Name="VolumeText" Grid.Column="2" FontSize="11" Foreground="{DynamicResource MutedBrush}"
+                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+      </Grid>
+    </Grid>
+  </Border>
+</UserControl>

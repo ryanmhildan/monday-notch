@@ -1,0 +1,37 @@
+# Builds MondayNotch.exe and attaches it to a GitHub Release whenever a version tag (v0.2.0, v1.0.0, ...) is pushed.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write # needed to create the release and upload the .exe
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Publish single-file exe
+        shell: pwsh
+        run: |
+          $version = "$env:GITHUB_REF_NAME".TrimStart('v')
+          dotnet publish MondayNotch.csproj -c Release -r win-x64 --self-contained `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -p:Version=$version `
+            -o publish
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: publish/MondayNotch.exe
+          generate_release_notes: true

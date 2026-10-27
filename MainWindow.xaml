@@ -1,0 +1,353 @@
+<Window x:Class="MondayNotch.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:MondayNotch"
+        xmlns:pages="clr-namespace:MondayNotch.Pages"
+        Title="Monday Notch"
+        Width="800" Height="370"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" Topmost="True" ShowInTaskbar="False" ShowActivated="False"
+        WindowStartupLocation="Manual" Left="0" Top="0"
+        FontFamily="Segoe UI Variable Text, Segoe UI" Foreground="{DynamicResource TextBrush}"
+        UseLayoutRounding="True"
+        PreviewMouseLeftButtonDown="Window_PreviewMouseLeftButtonDown">
+
+  <Grid x:Name="Root">
+    <!-- The ears are small inward curves where an anchored notch meets the top of the screen, so it looks like
+         it grows out of the bezel. They sit either side of the notch and follow its width. Each overlaps the
+         notch by 1px to avoid a hairline seam. A floating notch has none. -->
+    <StackPanel x:Name="NotchHost" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
+    <Path x:Name="LeftEar" Data="M0,0 L14,0 L14,14 A14,14 0 0 0 0,0 Z" Margin="0,0,-1,0" VerticalAlignment="Top">
+      <Path.Fill>
+        <SolidColorBrush x:Name="LeftEarFill" Color="Black" />
+      </Path.Fill>
+    </Path>
+    <Border x:Name="Notch"
+            Width="230" Height="34"
+            VerticalAlignment="Top"
+            CornerRadius="0,0,14,14" ClipToBounds="True"
+            MouseEnter="Notch_MouseEnter" MouseLeave="Notch_MouseLeave">
+      <!-- Theme colour by default; takes the album art's colours while lyrics are shown. Horizontal, so the left
+           and right edges match the ears' solid colours exactly. -->
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+          <GradientStop x:Name="NotchStart" Color="Black" Offset="0" />
+          <GradientStop x:Name="NotchEnd" Color="Black" Offset="1" />
+        </LinearGradientBrush>
+      </Border.Background>
+      <Grid>
+
+        <!-- Startup greeting: the logo pops in, then the greeting slides out next to it. -->
+        <StackPanel x:Name="GreetingView" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Opacity="0" IsHitTestVisible="False">
+          <Grid x:Name="GreetLogo" Width="38" Height="20" RenderTransformOrigin="0.5,0.5">
+            <Grid.RenderTransform>
+              <ScaleTransform x:Name="GreetLogoScale" ScaleX="1" ScaleY="1" />
+            </Grid.RenderTransform>
+            <Border CornerRadius="10" Background="{DynamicResource TextBrush}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+              <Ellipse Width="5" Height="8" Fill="{DynamicResource NotchBrush}" Margin="0,0,6,0" RenderTransformOrigin="0.5,0.5">
+                <Ellipse.RenderTransform>
+                  <ScaleTransform x:Name="LeftEyeScale" />
+                </Ellipse.RenderTransform>
+              </Ellipse>
+              <Ellipse Width="5" Height="8" Fill="{DynamicResource NotchBrush}" RenderTransformOrigin="0.5,0.5">
+                <Ellipse.RenderTransform>
+                  <ScaleTransform x:Name="RightEyeScale" />
+                </Ellipse.RenderTransform>
+              </Ellipse>
+            </StackPanel>
+          </Grid>
+          <TextBlock x:Name="GreetText" FontSize="15" FontWeight="SemiBold" Margin="12,0,0,0" VerticalAlignment="Center"
+                     Visibility="Collapsed" />
+        </StackPanel>
+
+        <!-- Closed. Either the idle row (three configurable widgets; album art while music plays and the Pomodoro
+             countdown while it runs take over the side slots) or, with lyrics shown and music playing, the artwork
+             next to the line being sung. -->
+        <Grid x:Name="CollapsedView" Height="34" Margin="12,0" VerticalAlignment="Top">
+          <Grid x:Name="ClockRow">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="64" />
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="64" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel x:Name="SlotLeft" Orientation="Horizontal" HorizontalAlignment="Left" />
+            <Border x:Name="MiniArt" Width="20" Height="20" CornerRadius="5"
+                    HorizontalAlignment="Left" VerticalAlignment="Center"
+                    Background="{DynamicResource TrackBrush}" Visibility="Collapsed">
+              <TextBlock x:Name="MiniArtGlyph" Text="&#xEC4F;" FontFamily="{StaticResource IconFont}" FontSize="11"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+
+            <StackPanel x:Name="SlotCenter" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" />
+
+            <StackPanel x:Name="SlotRight" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" />
+            <TextBlock x:Name="MiniPomo" Grid.Column="2" FontSize="12" FontWeight="SemiBold" Foreground="#FF9F45"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="Collapsed" />
+          </Grid>
+
+          <StackPanel x:Name="LyricRow" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Collapsed">
+            <Border x:Name="LyricArt" Width="22" Height="22" CornerRadius="6" Margin="0,0,10,0"
+                    VerticalAlignment="Center" Background="{DynamicResource TrackBrush}">
+              <TextBlock x:Name="LyricArtGlyph" Text="&#xEC4F;" FontFamily="{StaticResource IconFont}" FontSize="11"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock x:Name="CollapsedLyric" MaxWidth="500" VerticalAlignment="Center"
+                       FontSize="12.5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+          </StackPanel>
+        </Grid>
+
+        <!-- Open: date and time, one page at a time, and the page dots. -->
+        <Grid x:Name="ExpandedView" Width="368" Height="172" Margin="0,10,0,0"
+              HorizontalAlignment="Center" VerticalAlignment="Top"
+              Opacity="0" IsHitTestVisible="False">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="24" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="14" />
+          </Grid.RowDefinitions>
+
+          <Grid Margin="4,0">
+            <TextBlock x:Name="DateText" FontSize="12" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+              <StackPanel x:Name="HeaderBattery" Orientation="Horizontal" Margin="0,0,12,0" Visibility="Collapsed">
+                <local:BatteryIcon x:Name="HeaderBatteryIcon" />
+                <TextBlock x:Name="BatteryText" FontSize="12" Foreground="{DynamicResource MutedBrush}" Margin="5,0,0,0"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+              <TextBlock x:Name="TodoCount" FontSize="12" Foreground="{DynamicResource MutedBrush}" Margin="0,0,12,0"
+                         VerticalAlignment="Center" Visibility="Collapsed" />
+              <Button x:Name="LyricsBtn" Style="{StaticResource PillButton}" Margin="0,0,12,0" Click="LyricsBtn_Click"
+                      Visibility="Collapsed" />
+              <TextBlock x:Name="BigClock" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+            </StackPanel>
+          </Grid>
+
+          <Grid Grid.Row="1" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="28" />
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="28" />
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="PrevPageBtn" Style="{StaticResource IconButton}" Width="24" Height="48" FontSize="12"
+                    HorizontalAlignment="Left" Content="&#xE76B;" ToolTip="Previous page" Click="PrevPageBtn_Click" />
+            <Button x:Name="NextPageBtn" Grid.Column="2" Style="{StaticResource IconButton}" Width="24" Height="48" FontSize="12"
+                    HorizontalAlignment="Right" Content="&#xE76C;" ToolTip="Next page" Click="NextPageBtn_Click" />
+
+            <!-- Control Center (shown first when nothing is playing) -->
+            <pages:ControlCenterPage x:Name="ControlCenterPage" Grid.Column="1">
+              <pages:ControlCenterPage.RenderTransform>
+                <TranslateTransform />
+              </pages:ControlCenterPage.RenderTransform>
+            </pages:ControlCenterPage>
+
+            <!-- Music -->
+            <Grid x:Name="MusicPage" Grid.Column="1" Visibility="Collapsed">
+              <Grid.RenderTransform>
+                <TranslateTransform />
+              </Grid.RenderTransform>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+
+              <Border Background="{DynamicResource CardBrush}" CornerRadius="16" Padding="10">
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="64" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+
+                  <Border x:Name="Artwork" Width="64" Height="64" CornerRadius="10" Background="{DynamicResource TrackBrush}"
+                          VerticalAlignment="Top">
+                    <TextBlock x:Name="ArtworkGlyph" Text="&#xEC4F;" FontFamily="{StaticResource IconFont}" FontSize="24"
+                               Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Border>
+
+                  <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                    <TextBlock x:Name="TrackTitle" FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                    <TextBlock x:Name="TrackArtist" FontSize="11.5" Foreground="{DynamicResource MutedBrush}"
+                               TextTrimming="CharacterEllipsis" Margin="0,1,0,0" />
+
+                    <!-- Taller transparent hit area so the thin bar is easy to click for seeking. -->
+                    <Grid x:Name="SeekArea" Height="12" Margin="0,6,0,0" Background="Transparent" Cursor="Hand"
+                          MouseLeftButtonDown="SeekArea_MouseLeftButtonDown">
+                      <Border x:Name="ProgressTrack" Height="4" CornerRadius="2" Background="{DynamicResource TrackBrush}">
+                        <Border x:Name="ProgressFill" Width="0" HorizontalAlignment="Left" CornerRadius="2"
+                                Background="{DynamicResource TextBrush}" />
+                      </Border>
+                    </Grid>
+
+                    <Grid Margin="0,1,0,0">
+                      <TextBlock x:Name="ElapsedText" FontSize="10" Foreground="{DynamicResource MutedBrush}" />
+                      <TextBlock x:Name="RemainingText" FontSize="10" Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Right" />
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                      <Button x:Name="PrevBtn" Style="{StaticResource IconButton}" Content="&#xE892;" ToolTip="Previous" Click="PrevBtn_Click" />
+                      <Button x:Name="PlayPauseBtn" Style="{StaticResource IconButton}" Content="&#xE768;" FontSize="16" Margin="6,0"
+                              ToolTip="Play / pause" Click="PlayPauseBtn_Click" />
+                      <Button x:Name="NextBtn" Style="{StaticResource IconButton}" Content="&#xE893;" ToolTip="Next" Click="NextBtn_Click" />
+                    </StackPanel>
+                  </StackPanel>
+                </Grid>
+              </Border>
+
+              <!-- Lyrics: synced lines scroll so the current one stays near the top; click a line to jump there. -->
+              <Border x:Name="LyricsCard" Grid.Column="1" Width="220" Margin="8,0,0,0" Padding="12,10"
+                      Background="{DynamicResource CardBrush}" CornerRadius="16" Visibility="Collapsed"
+                      MouseWheel="LyricsCard_MouseWheel">
+                <Grid x:Name="LyricsViewport" ClipToBounds="True">
+                  <!-- Fade the bottom so a half-visible line trails off instead of being sliced. -->
+                  <Grid.OpacityMask>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                      <GradientStop Color="Black" Offset="0.7" />
+                      <GradientStop Color="Transparent" Offset="1" />
+                    </LinearGradientBrush>
+                  </Grid.OpacityMask>
+                  <!-- Canvas so the full list keeps its height; a Grid would clip it to the card before it is scrolled. -->
+                  <Canvas>
+                    <StackPanel x:Name="LyricsPanel" Width="{Binding ActualWidth, ElementName=LyricsViewport}">
+                      <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="LyricsScroll" />
+                      </StackPanel.RenderTransform>
+                    </StackPanel>
+                  </Canvas>
+                  <TextBlock x:Name="LyricsStatus" FontSize="12" Foreground="{DynamicResource MutedBrush}"
+                             HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" />
+                </Grid>
+              </Border>
+            </Grid>
+
+            <!-- Focus (Pomodoro) -->
+            <Border x:Name="FocusPage" Grid.Column="1" Background="{DynamicResource CardBrush}" CornerRadius="16" Padding="20,12"
+                    Visibility="Collapsed">
+              <Border.RenderTransform>
+                <TranslateTransform />
+              </Border.RenderTransform>
+              <Grid>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="*" />
+                  <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel VerticalAlignment="Center">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="PomoMode" Text="Focus" FontSize="12" Foreground="{DynamicResource MutedBrush}" />
+                    <TextBlock x:Name="PomoSessions" FontSize="12" Foreground="{DynamicResource MutedBrush}" Margin="5,0,0,0" />
+                  </StackPanel>
+                  <TextBlock x:Name="PomoTime" Text="25:00" FontSize="40" FontWeight="SemiBold" Margin="0,-2,0,0" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                  <Button x:Name="PomoResetBtn" Style="{StaticResource IconButton}" Width="36" Height="36" FontSize="15"
+                          Content="&#xE72C;" ToolTip="Reset" Click="PomoResetBtn_Click" />
+                  <Button x:Name="PomoStartBtn" Style="{StaticResource PrimaryButton}" Width="48" Height="48" FontSize="18"
+                          Content="&#xE768;" Margin="10,0" ToolTip="Start / pause" Click="PomoStartBtn_Click" />
+                  <Button x:Name="PomoSkipBtn" Style="{StaticResource IconButton}" Width="36" Height="36" FontSize="15"
+                          Content="&#xE893;" ToolTip="Skip" Click="PomoSkipBtn_Click" />
+                </StackPanel>
+
+                <Border x:Name="PomoTrack" Grid.Row="1" Grid.ColumnSpan="2" Height="4" CornerRadius="2"
+                        Background="{DynamicResource TrackBrush}" Margin="0,8,0,2">
+                  <Border x:Name="PomoFill" Width="0" HorizontalAlignment="Left" CornerRadius="2" Background="#FF9F45" />
+                </Border>
+              </Grid>
+            </Border>
+
+            <!-- To-do -->
+            <Border x:Name="TodoPage" Grid.Column="1" Background="{DynamicResource CardBrush}" CornerRadius="16" Padding="10"
+                    Visibility="Collapsed">
+              <Border.RenderTransform>
+                <TranslateTransform />
+              </Border.RenderTransform>
+              <Grid>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="30" />
+                  <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Border CornerRadius="10" Background="{DynamicResource InputBrush}">
+                  <Grid>
+                    <TextBox x:Name="TodoInput" Style="{StaticResource PlainTextBox}" Margin="8,0,32,0"
+                             KeyDown="TodoInput_KeyDown" TextChanged="TodoInput_TextChanged" />
+                    <TextBlock x:Name="TodoPlaceholder" Text="Add a task…" Margin="11,0,0,0" FontSize="12.5"
+                               Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" IsHitTestVisible="False" />
+                    <Button Style="{StaticResource IconButton}" Width="26" Height="26" FontSize="11" Margin="0,0,2,0"
+                            HorizontalAlignment="Right" Content="&#xE710;" ToolTip="Add" Click="TodoAdd_Click" />
+                  </Grid>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" Margin="0,6,0,0" VerticalScrollBarVisibility="Hidden" Focusable="False">
+                  <ItemsControl x:Name="TodoList">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <Grid x:Name="Row" Height="24" Background="Transparent">
+                          <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="26" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="24" />
+                          </Grid.ColumnDefinitions>
+                          <CheckBox Style="{StaticResource TodoCheck}" IsChecked="{Binding Done, Mode=TwoWay}"
+                                    HorizontalAlignment="Left" Margin="4,0,0,0" Click="TodoCheck_Click" />
+                          <TextBlock x:Name="Label" Grid.Column="1" Text="{Binding Text}" FontSize="12.5"
+                                     TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                          <Button x:Name="Delete" Grid.Column="2" Style="{StaticResource IconButton}" Width="22" Height="22"
+                                  FontSize="9" Content="&#xE711;" ToolTip="Delete" Opacity="0" Click="TodoDelete_Click" />
+                        </Grid>
+                        <DataTemplate.Triggers>
+                          <DataTrigger Binding="{Binding Done}" Value="True">
+                            <Setter TargetName="Label" Property="TextDecorations" Value="Strikethrough" />
+                            <Setter TargetName="Label" Property="Opacity" Value="0.45" />
+                          </DataTrigger>
+                          <Trigger SourceName="Row" Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Delete" Property="Opacity" Value="1" />
+                          </Trigger>
+                        </DataTemplate.Triggers>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </ScrollViewer>
+
+                <TextBlock x:Name="TodoEmpty" Grid.Row="1" Text="No tasks yet" FontSize="12"
+                           Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+
+            <!-- Quick note -->
+            <pages:NotePage x:Name="NotePage" Grid.Column="1" Visibility="Collapsed">
+              <pages:NotePage.RenderTransform>
+                <TranslateTransform />
+              </pages:NotePage.RenderTransform>
+            </pages:NotePage>
+
+            <!-- Settings -->
+            <pages:SettingsPage x:Name="SettingsPage" Grid.Column="1" Visibility="Collapsed">
+              <pages:SettingsPage.RenderTransform>
+                <TranslateTransform />
+              </pages:SettingsPage.RenderTransform>
+            </pages:SettingsPage>
+          </Grid>
+
+          <!-- One dot per page; click a dot to jump there. -->
+          <StackPanel x:Name="PageDots" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center"
+                      VerticalAlignment="Bottom" />
+        </Grid>
+
+      </Grid>
+    </Border>
+    <Path x:Name="RightEar" Data="M0,0 L14,0 A14,14 0 0 0 0,14 Z" Margin="-1,0,0,0" VerticalAlignment="Top">
+      <Path.Fill>
+        <SolidColorBrush x:Name="RightEarFill" Color="Black" />
+      </Path.Fill>
+    </Path>
+    </StackPanel>
+  </Grid>
+</Window>
