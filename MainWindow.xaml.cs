@@ -1123,12 +1123,17 @@ public partial class MainWindow : Window
             Save(Path(page.ToString().ToLowerInvariant()), expanded: true);
         }
 
-        // Light theme and floating shape, without touching the saved preferences.
-        ThemeManager.Apply(ThemeMode.Light);
+        // Floating shape in the dark and the light theme, without touching the saved preferences.
+        ThemeManager.Apply(ThemeMode.Dark);
         _shape = NotchShape.Floating;
         _notchColors = null;
         ShowPage(NotchPage.ControlCenter, direction: 0);
         await Task.Delay(800);
+        Save(Path("floating-closed"), expanded: false);
+        Save(Path("floating-controlcenter"), expanded: true);
+
+        ThemeManager.Apply(ThemeMode.Light);
+        _notchColors = null;
         Save(Path("light-closed"), expanded: false);
         Save(Path("light-controlcenter"), expanded: true);
         ThemeManager.Apply(AppSettings.Theme);
